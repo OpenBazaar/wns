@@ -118,7 +118,7 @@
             console.log(JSON.stringify(result));
             alert('The peerID for ' + result[1] + ' is: ' + result[4])
           } else {
-            alert('Handle not found.');
+            alert('Handle not found. If you just registered your handle, it make take a minute or so to update.');
           }
         });
       }
@@ -150,7 +150,7 @@
         worfnsContract.isHandleAvailable(this.handle, function (err, result) {
           if (result) {
             console.log('Great news, handle is available!');
-            worfnsContract.createHandle(account, handle, displayName, imageLocation, peerID, function (err, result) {
+            worfnsContract.createHandle(handle, displayName, imageLocation, peerID, function (err, result) {
               if (result) {
                 alert('Handle registered!');
               } else {
