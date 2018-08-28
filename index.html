@@ -1,0 +1,170 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>WORF Naming System Demo</title>
+  <!-- css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.3/css/bulma.css">
+  <style>
+    .box {
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="hero is-fullheight is-info is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title has-text-centered">WORF naming service demo</h1>
+        <div class="box">
+          <form id="searchHandle-form" @submit.prevent="searchForm">
+            <div class="field has-addons">
+              <div class="control is-expanded">
+                <input class="input" type="text" name="searchQuery" placeholder="Search a 'handle'" v-model="searchQuery">
+              </div>
+              <div class="control">
+                <button type="submit" class="button is-info">
+                  Search
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="box">
+
+          <!-- our signup form ===================== -->
+          <form id="handleRegistration-form" @submit.prevent="processForm">
+            <!-- handle -->
+            <div class="field">
+              <label class="label">Handle</label>
+              <input type="text" class="input" name="handle" v-model="handle">
+            </div>
+
+            <!-- display name -->
+            <div class="field">
+              <label class="label">Display name</label>
+              <input type="text" class="input" name="displayName" v-model="displayName">
+            </div>
+
+            <!-- image location -->
+            <div class="field">
+              <label class="label">Image location (URI)</label>
+              <input type="text" class="input" name="imageLocation" v-model="imageLocation">
+            </div>
+
+            <!-- peerID -->
+            <div class="field">
+              <label class="label">peerID</label>
+              <input type="text" class="input" name="peerID" v-model="peerID">
+            </div>
+
+            <!-- submit button -->
+            <div class="field has-text-right">
+              <button type="submit" class="button is-danger">
+                Register
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+
+
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use the browser's ethereum provider
+    var provider = web3.currentProvider
+  } else {
+    // web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/PPA251WIHYesPSSgzLQj"));
+  }
+
+  // Initialise WORFNS contract
+  //// ABI
+  let worfnsContractABI = web3.eth.contract([{ "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newName", "type": "string" }], "name": "changeDisplayName", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "createHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "peerId", "type": "string" }], "name": "changePeerId", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "addHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "", "type": "address" }], "name": "superUsers", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "handle", "type": "string" }], "name": "isHandleAvailable", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }], "name": "removeHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "handleName", "type": "string" }], "name": "getHandleInfo", "outputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "displayName", "type": "string" }, { "name": "imageLocation", "type": "string" }, { "name": "peerId", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newImageLocation", "type": "string" }], "name": "changeImageLocation", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "name": "_superUsers", "type": "address[]" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "owner", "type": "address" }], "name": "NewHandle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "displayName", "type": "string" }], "name": "NewDisplayName", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "imageLocation", "type": "string" }], "name": "NewImageLocation", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }], "name": "NewPeerId", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }], "name": "HandleRemoved", "type": "event" }])
+  //// Contract address
+  let worfnsContract = worfnsContractABI.at('0x75483ee05abdf364ae5dbe313a0366d32c1a0ffe');
+
+  // Form (Vue)
+  const search = new Vue({
+    el: '#searchHandle-form',
+
+    // our data
+    data: {
+      searchQuery: ''
+    },
+
+    // our methods
+    methods: {
+      searchForm: function () {
+        let searchQuery = this.searchQuery
+
+        console.log("Data check =>", { searchQuery });
+
+        worfnsContract.getHandleInfo(searchQuery, function (err, result) {
+          if (result) {
+            console.log(JSON.stringify(result));
+            alert('The peerID for ' + result[1] + ' is: ' + result[4])
+          } else {
+            console.log('Handle not found.');
+          }
+        });
+      }
+    }
+  });
+
+  const rego = new Vue({
+    el: '#handleRegistration-form',
+
+    // our data
+    data: {
+      handle: '',
+      displayName: '',
+      imageLocation: '',
+      peerID: ''
+    },
+
+    // our methods
+    methods: {
+      processForm: function () {
+        let account = web3.eth.accounts[0]
+        let handle = this.handle;
+        let displayName = this.displayName;
+        let imageLocation = this.imageLocation;
+        let peerID = this.peerID;
+
+        console.log("Data check =>", { handle, displayName, imageLocation, peerID });
+
+        worfnsContract.isHandleAvailable(this.handle, function (err, result) {
+          if (result) {
+            console.log('Great news, handle is available!');
+            worfnsContract.createHandle(account, handle, displayName, imageLocation, peerID, function (err, result) {
+              if (result) {
+                alert('Handle registered!');
+              } else {
+                alert('Error occurred');
+              }
+            });
+          } else {
+            console.log('Sorry, this handle is taken :(');
+          }
+        });
+      }
+    }
+  });
+
+</script>
+
+</html>
