@@ -114,11 +114,11 @@
         console.log("Data check =>", { searchQuery });
 
         worfnsContract.getHandleInfo(searchQuery, function (err, result) {
-          if (result) {
+          if (result && result.constructor === Array && result[4] !== "" ) {
             console.log(JSON.stringify(result));
             alert('The peerID for ' + result[1] + ' is: ' + result[4])
           } else {
-            console.log('Handle not found.');
+            alert('Handle not found.');
           }
         });
       }
