@@ -16,7 +16,7 @@ contract WNS {
     
     mapping(address=>bool) public superUsers;//addresses who are allowed to handles on other user's behalf
 
-    event NewHandle(string handle, address indexed owner);
+    event NewHandle(string handle, string peerId, address indexed owner);
     
     event NewDisplayName(string handle, string displayName);
     
@@ -105,7 +105,7 @@ contract WNS {
             peerId:_peerId
         });
                 
-        emit NewHandle(handle, owner);
+        emit NewHandle(handle, _peerId, owner);
     }
     
     /** 
