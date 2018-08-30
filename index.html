@@ -165,16 +165,49 @@
 <script>
   var totalHandleCount = 0;
   var rowToRemoveFromLatestTable = 1;
+  
+  window.addEventListener('load', function() {
 
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
+// Checking if Web3 has been injected by the browser (Mist/MetaMask)
+if (typeof web3 !== 'undefined') {
     // Use the browser's ethereum provider
-    var provider = web3.currentProvider
-  } else {
-    // web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io"));
-  }
+    var provider = web3.currentProvider;
 
-  // Initialise WORFNS contract
+  web3.version.getNetwork((err, netId) => {
+  switch (netId) {
+    case "1":
+      console.log('This is mainnet. Please switch to rinkeby');
+      alert('This is mainnet. Please switch to rinkeby');
+      break
+    case "2":
+      console.log('This is the deprecated Morden test network. Please switch to rinkeby');
+      alert('This is the deprecated Morden test network. Please switch to rinkeby');
+      break
+    case "3":
+      console.log('This is the ropsten test network. Please switch to rinkeby');
+      alert('This is the ropsten test network. Please switch to rinkeby');
+      break
+    case "42":
+      console.log('This is the kovan test network. Please switch to rinkeby');
+      alert('This is the kovan test network. Please switch to rinkeby');
+      break  
+    case "4":
+      start();
+      break
+    default:
+      console.log('This is an unknown network.Please switch to rinkeby');
+      alert('This is an unknown network.Please switch to rinkeby');
+  }
+})
+
+    
+  } else {
+    alert("Please install metamask!!");
+  }
+});
+
+  function start(){
+    // Initialise WORFNS contract
   //// ABI
   let worfnsContractABI = web3.eth.contract([{ "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newName", "type": "string" }], "name": "changeDisplayName", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "createHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "peerId", "type": "string" }], "name": "changePeerId", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "addHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "", "type": "address" }], "name": "superUsers", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "handle", "type": "string" }], "name": "isHandleAvailable", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }], "name": "removeHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "handleName", "type": "string" }], "name": "getHandleInfo", "outputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "displayName", "type": "string" }, { "name": "imageLocation", "type": "string" }, { "name": "peerId", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newImageLocation", "type": "string" }], "name": "changeImageLocation", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "name": "_superUsers", "type": "address[]" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }, { "indexed": true, "name": "owner", "type": "address" }], "name": "NewHandle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "displayName", "type": "string" }], "name": "NewDisplayName", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "imageLocation", "type": "string" }], "name": "NewImageLocation", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }], "name": "NewPeerId", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }], "name": "HandleRemoved", "type": "event" }])
   //// Contract address
@@ -291,6 +324,9 @@
     }
 
   });
+  }  
+
+  
 
 </script>
 
