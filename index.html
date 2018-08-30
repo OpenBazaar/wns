@@ -129,7 +129,7 @@
   <section class="hero is-light">
     <div class="hero-body">
       <div class="container">
-        <h5 class="title is-5" style="color: #000000">Latest handles</h5>
+        <h5 class="title is-5" style="color: #000000">Latest handles (Total count- <span id="totalHandles">0</span>)</h5>
         <!-- Registered handles ===================== -->
         <table class="table is-bordered is-striped is-narrow is-hoverable" id="handlesTable">
           <thead>
@@ -143,12 +143,29 @@
             <tr></tr>
           </tbody>
         </table>
+
+        <h5 class="title is-5" style="color: #000000">My handles</h5>
+        <!-- Registered handles ===================== -->
+        <table class="table is-bordered is-striped is-narrow is-hoverable" id="myHandlesTable">
+          <thead>
+            <tr>
+              <th style="font-size:1vw;">Handle</th>
+              <th style="font-size:1vw;">peerId</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
 </body>
 
 <script>
+  var totalHandleCount = 0;
+  var rowToRemoveFromLatestTable = 1;
+
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
     // Use the browser's ethereum provider
@@ -212,6 +229,7 @@
         let imageLocation = this.imageLocation;
         let peerID = this.peerID;
 
+        
         console.log("Data check =>", { handle, displayName, imageLocation, peerID });
 
         worfnsContract.isHandleAvailable(this.handle, function (err, result) {
@@ -234,20 +252,47 @@
   });
 
   // Display the latest registered handles
-  var newHandleEvent = worfnsContract.NewHandle({}, { fromBlock: 2902140, toBlock: 'latest' });
+  var newHandleEvent = worfnsContract.NewHandle({}, { fromBlock: 2898449, toBlock: 'latest' });
   newHandleEvent.watch(function (error, result) {
-    console.log("Event fired", error, result)
-    if (!error && result.args.peerId.length > 0) {
-      var $tr = $('<tr>').append(
-        $('<td style="font-size:1vw;">').text(result.args.handle),
-        $('<td style="font-size:1vw;">').text(result.args.peerId),
-        $('<td style="font-size:1vw;">').text(result.args.owner),
-      ).appendTo('#handlesTable');
-    } else {
-      console.log('Handle not found, or missing peerId!');
+    console.log("Event fired", error, result);
+
+    if(!error){
+      var handle = result.args.handle;
+      var peerId = result.args.peerId;
+      var owner = result.args.owner;
+
+      if (peerId.length > 0) {
+        totalHandleCount = totalHandleCount + 1;
+        if(totalHandleCount > 20){
+          $('#row' +rowToRemoveFromLatestTable).remove();
+          rowToRemoveFromLatestTable++;
+        }
+
+        $("#totalHandles").text(totalHandleCount);
+
+        var $tr = $('<tr id =row' +totalHandleCount+ '>').append(
+          $('<td style="font-size:1vw;">').text(handle),
+          $('<td style="font-size:1vw;">').text(peerId),
+          $('<td style="font-size:1vw;">').text(owner),
+        ).appendTo('#handlesTable');
+
+        if(owner == web3.eth.accounts[0]){
+         var $tr = $('<tr>').append(
+          $('<td style="font-size:1vw;">').text(handle),
+          $('<td style="font-size:1vw;">').text(peerId),
+        ).appendTo('#myHandlesTable');
+        }
+      }
+      else{
+        console.log("Peer Id missing for handle", handle);
+      }
+    }else {
+      console.log('Handle not found');
     }
+
   });
 
 </script>
 
 </html>
+
