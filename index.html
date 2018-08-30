@@ -16,6 +16,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 </head>
 
@@ -125,25 +126,44 @@
       </div>
     </div>
   </div>
+  <section class="hero is-light">
+    <div class="hero-body">
+      <div class="container">
+        <h5 class="title is-5" style="color: #000000">Latest handles</h5>
+        <!-- Registered handles ===================== -->
+        <table class="table is-bordered is-striped is-narrow is-hoverable" id="handlesTable">
+          <thead>
+            <tr>
+              <th style="font-size:1vw;">Handle</th>
+              <th style="font-size:1vw;">peerId</th>
+              <th style="font-size:1vw;">Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </body>
+
 <script>
-
-
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
     // Use the browser's ethereum provider
     var provider = web3.currentProvider
   } else {
-    // web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/PPA251WIHYesPSSgzLQj"));
+    // web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io"));
   }
 
   // Initialise WORFNS contract
   //// ABI
-  let worfnsContractABI = web3.eth.contract([{ "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newName", "type": "string" }], "name": "changeDisplayName", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "createHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "peerId", "type": "string" }], "name": "changePeerId", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "addHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "", "type": "address" }], "name": "superUsers", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "handle", "type": "string" }], "name": "isHandleAvailable", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }], "name": "removeHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "handleName", "type": "string" }], "name": "getHandleInfo", "outputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "displayName", "type": "string" }, { "name": "imageLocation", "type": "string" }, { "name": "peerId", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newImageLocation", "type": "string" }], "name": "changeImageLocation", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "name": "_superUsers", "type": "address[]" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "owner", "type": "address" }], "name": "NewHandle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "displayName", "type": "string" }], "name": "NewDisplayName", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "imageLocation", "type": "string" }], "name": "NewImageLocation", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }], "name": "NewPeerId", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }], "name": "HandleRemoved", "type": "event" }])
+  let worfnsContractABI = web3.eth.contract([{ "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newName", "type": "string" }], "name": "changeDisplayName", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "createHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "peerId", "type": "string" }], "name": "changePeerId", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "_displayName", "type": "string" }, { "name": "_imageLocation", "type": "string" }, { "name": "_peerId", "type": "string" }], "name": "addHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "", "type": "address" }], "name": "superUsers", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "handle", "type": "string" }], "name": "isHandleAvailable", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }], "name": "removeHandle", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "handleName", "type": "string" }], "name": "getHandleInfo", "outputs": [{ "name": "owner", "type": "address" }, { "name": "handle", "type": "string" }, { "name": "displayName", "type": "string" }, { "name": "imageLocation", "type": "string" }, { "name": "peerId", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newImageLocation", "type": "string" }], "name": "changeImageLocation", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "handle", "type": "string" }, { "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "name": "_superUsers", "type": "address[]" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }, { "indexed": true, "name": "owner", "type": "address" }], "name": "NewHandle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "displayName", "type": "string" }], "name": "NewDisplayName", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "imageLocation", "type": "string" }], "name": "NewImageLocation", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": false, "name": "peerId", "type": "string" }], "name": "NewPeerId", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }, { "indexed": true, "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "name": "handle", "type": "string" }], "name": "HandleRemoved", "type": "event" }])
   //// Contract address
-  let worfnsContract = worfnsContractABI.at('0x75483ee05abdf364ae5dbe313a0366d32c1a0ffe');
+  let worfnsContract = worfnsContractABI.at('0xd81a7e253f7364e574dfa496a14149a89ab2d8b8');
 
-  // Form (Vue)
+  // Search for a handle
   const search = new Vue({
     el: '#searchHandle-form',
 
@@ -171,6 +191,7 @@
     }
   });
 
+  // Register a new handle
   const rego = new Vue({
     el: '#handleRegistration-form',
 
@@ -209,6 +230,21 @@
           }
         });
       }
+    }
+  });
+
+  // Display the latest registered handles
+  var newHandleEvent = worfnsContract.NewHandle({}, { fromBlock: 2902140, toBlock: 'latest' });
+  newHandleEvent.watch(function (error, result) {
+    console.log("Event fired", error, result)
+    if (!error && result.args.peerId.length > 0) {
+      var $tr = $('<tr>').append(
+        $('<td style="font-size:1vw;">').text(result.args.handle),
+        $('<td style="font-size:1vw;">').text(result.args.peerId),
+        $('<td style="font-size:1vw;">').text(result.args.owner),
+      ).appendTo('#handlesTable');
+    } else {
+      console.log('Handle not found, or missing peerId!');
     }
   });
 
