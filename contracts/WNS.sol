@@ -1,20 +1,12 @@
 pragma solidity 0.4.24;
 
+/** 
+* @dev Worldwide OpenBazaar Resource Finder Naming Service(WorfNS)
+* A simple naming service to register handles on FCFS basis
+* It will map uniques handle to openbazaar addresses i.e. peerId
+* handle=>peerId
+*/
 contract WNS {
-    
-    struct Handle{
-
-        address handleOwner;//Owner of the handle
-        string handleName;//This should be unqiue in nature
-        string displayName;//Need not to be unqiue
-        string imageLocation;//Can be an URI or IPNS address
-        string peerId;//OB peerId
-
-    }
-    
-    mapping(bytes32=>Handle) handleNameHashVsHandle;//Unique handle hash versus Handle
-    
-    mapping(address=>bool) public superUsers;//addresses who are allowed to handles on other user's behalf
 
     event NewHandle(string handle, string peerId, address indexed owner);
     
@@ -27,6 +19,18 @@ contract WNS {
     event OwnershipTransferred(string handle, address indexed newOwner);
     
     event HandleRemoved(string handle);
+    
+    struct Handle{
+        address handleOwner;//Owner of the handle
+        string handleName;//This should be unqiue in nature
+        string displayName;//Need not to be unqiue
+        string imageLocation;//Can be an URI or IPNS address
+        string peerId;//OB peerId
+    }
+    
+    mapping(bytes32=>Handle) handleNameHashVsHandle;//Unique handle hash versus Handle
+    
+    mapping(address=>bool) public superUsers;//addresses who are allowed to handles on other user's behalf
 
     modifier onlyHandleOwner(string handle){
         require(handleNameHashVsHandle[keccak256(abi.encodePacked(handle))].handleOwner == msg.sender, "Unauthorized access to Handle");
